@@ -5,8 +5,8 @@ export class FluidGrid {
     #dPrev = [];
     #v = { x: [], y: [] };
     #vPrev = { x: [], y: [] };
-    #dt = 0.5;
-    #diff = 0.1;
+    #dt = 0.05;
+    #diff = 0.001;
     
     constructor(w, h) {
         this.#w = w;
@@ -38,7 +38,7 @@ export class FluidGrid {
     initVelocity = () => {
         this.#addDifferentialAmount(this.#v.x, this.#vPrev.x, 1.0);
         this.#addDifferentialAmount(this.#v.y, this.#vPrev.y, 1.0);
-        console.log(this.#vPrev.x);
+        this.#addDifferentialAmount(this.#d, this.#dPrev, 1);
     }
 
     #diffuse = (b, data, prevData, diff, dt) => {
@@ -77,9 +77,9 @@ export class FluidGrid {
                 const j0=Math.floor(yPrev); const j1 = j0 + 1;
                 const s1 = xPrev - i0; const s0 = 1 - s1;
                 const t1 = yPrev - j0; const t0 = 1 - t1;
-                d[this.#i(x, y)] = d[this.#i(x, y)];
-                //s0 * (t0 * d0[this.#i(i0, j0)] + t1 * d0[this.#i(i0, j1)]) +
-                //s1 * (t0 * d0[this.#i(i1, j0)] + t1 * d0[this.#i(i1, j1)])
+                d[this.#i(x, y)] = 
+                s0 * (t0 * d0[this.#i(i0, j0)] + t1 * d0[this.#i(i0, j1)]) +
+                s1 * (t0 * d0[this.#i(i1, j0)] + t1 * d0[this.#i(i1, j1)])
             }
         }
         this.#setBoundaries(b, data);
@@ -92,10 +92,13 @@ export class FluidGrid {
     }
 
     densityStep = () => {
-        this.#addDifferentialAmount(this.#d, this.#dPrev, this.#dt);
+        // ORIGINAL CODE HAD AN ADDSOURCE HERE!!!
         [this.#d, this.#dPrev] = [this.#dPrev, this.#d];
         this.#diffuse(null, this.#d, this.#dPrev, this.#diff, this.#dt);
         [this.#d, this.#dPrev] = [this.#dPrev, this.#d];
+        this.#advect(null, this.#d, this.#dPrev, this.#dt);
+        
+        // [this.#d, this.#dPrev] = [this.#dPrev, this.#d];
         // this.#advect(null, this.#d, this.#dPrev, this.#dt);
     }
 

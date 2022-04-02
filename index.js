@@ -31,9 +31,11 @@ const initCanvas = () => {
 const init = () => {
     grid = new FluidGrid(w, h);
     grid.addDensity(50,50,100);
+    grid.addDensity(40,50,100);
+    grid.addDensity(50,40,10);
     for (let x = 0; x < w; x++) {
         for (let y = 0; y < h; y++) {
-            grid.addVelocity(x,y, [0.1,0.1]);
+            grid.addVelocity(x,y, [0.1,-0.1]);
         }
     }
     grid.initVelocity();
