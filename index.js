@@ -1,7 +1,7 @@
 import { FluidGrid } from './modules/fluidGrid.js';
 
-const w = 10;
-const h = 10;
+const w = 100;
+const h = 100;
 let view = null;
 let ctx = null;
 let grid = null;
@@ -30,13 +30,23 @@ const initCanvas = () => {
 
 const init = () => {
     grid = new FluidGrid(w, h);
+    grid.addDensity(50,50,100);
+    for (let x = 0; x < w; x++) {
+        for (let y = 0; y < h; y++) {
+            grid.addVelocity(x,y, [0.1,0.1]);
+        }
+    }
+    grid.initVelocity();
+    
+    grid.densityStep();
     initCanvas();
+    renderGrid();
     startRenderLoop();
     
 }
 
 const onNewFrame = () => {
-    grid.addDensity(Math.floor(Math.random() * w),Math.floor(Math.random() * h),Math.floor(Math.random() * 255));
+    grid.densityStep();
     renderGrid();
 }
 
@@ -59,9 +69,9 @@ const renderGrid = () => {
         for(let y = 0; y < w; y ++) {
             const v = d[x + (y * w)];
             const o = 4 * (y * w + x);
-            da[o] = v;
-            da[o+1] = v;
-            da[o+2] = v;
+            da[o] = v * 255;
+            da[o+1] = v * 255;
+            da[o+2] = v * 255;
             da[o+3] = 255;
         }
     }
