@@ -6,7 +6,7 @@ export class FluidGrid {
     #v = { x: [], y: [] };
     #vPrev = { x: [], y: [] };
     #dt = 0.05;
-    #diff = 0.001;
+    #diff = 0.01;
     
     constructor(w, h) {
         this.#w = w;
@@ -38,7 +38,7 @@ export class FluidGrid {
     initVelocity = () => {
         this.#addDifferentialAmount(this.#v.x, this.#vPrev.x, 1.0);
         this.#addDifferentialAmount(this.#v.y, this.#vPrev.y, 1.0);
-        this.#addDifferentialAmount(this.#d, this.#dPrev, 1);
+        // this.#addDifferentialAmount(this.#d, this.#dPrev, 1);
     }
 
     #diffuse = (b, data, prevData, diff, dt) => {
@@ -93,6 +93,7 @@ export class FluidGrid {
 
     densityStep = () => {
         // ORIGINAL CODE HAD AN ADDSOURCE HERE!!!
+        // this.#addDifferentialAmount(this.#d, this.#dPrev, this.#dt);
         [this.#d, this.#dPrev] = [this.#dPrev, this.#d];
         this.#diffuse(null, this.#d, this.#dPrev, this.#diff, this.#dt);
         [this.#d, this.#dPrev] = [this.#dPrev, this.#d];

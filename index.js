@@ -1,12 +1,18 @@
 import { FluidGrid } from './modules/fluidGrid.js';
 
-const w = 100;
-const h = 100;
+const w = 200;
+const h = 200;
 let view = null;
 let ctx = null;
 let grid = null;
 let buf = null;
 let data = null;
+let c = 0;
+let a = Math.round(Math.random()) * 100;
+
+//interaction
+let mPos = [0, 0];
+let isMouseDown = false;
 
 
 const testrender = () => {
@@ -22,9 +28,21 @@ const initCanvas = () => {
     view = document.getElementById('view');
     view.width = w;
     view.height = h;
+    view.off
     ctx = view.getContext('2d');
     data=ctx.getImageData(0,0,w,h);
     buf=new Uint32Array(data.data.buffer);
+    const updateMouseStatus = (isDown, e) => {
+        isMouseDown = isDown;
+        mPos = [e.offsetX / view.offsetWidth * w, e.offsetY / view.offsetHeight * h];
+    }
+    view.onmousedown = (e) => {updateMouseStatus(true, e)};
+    view.onmouseup = (e) => {updateMouseStatus(false, e)};
+    view.onmousemove = (e) => {
+        updateMouseStatus(e.buttons === 1, e)
+    }
+
+
 
 }
 
@@ -48,6 +66,14 @@ const init = () => {
 }
 
 const onNewFrame = () => {
+    c += 1;
+    if (c > 10) {
+        c = 0;
+        a = Math.round(Math.random()) * 100;
+    }
+    if (isMouseDown) {
+        grid.addDensity(Math.floor(mPos[0]), Math.floor(mPos[1]), a );
+    }
     grid.densityStep();
     renderGrid();
 }
