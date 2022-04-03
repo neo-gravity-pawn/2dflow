@@ -12,6 +12,7 @@ let a = Math.round(Math.random()) * 100;
 
 //interaction
 let mPos = [0, 0];
+let mVec = [0, 0];
 let isMouseDown = false;
 
 
@@ -35,6 +36,7 @@ const initCanvas = () => {
     const updateMouseStatus = (isDown, e) => {
         isMouseDown = isDown;
         mPos = [e.offsetX / view.offsetWidth * w, e.offsetY / view.offsetHeight * h];
+        mVec = [mPos[0] - (w / 2), mPos[1] - (h/2)];
     }
     view.onmousedown = (e) => {updateMouseStatus(true, e)};
     view.onmouseup = (e) => {updateMouseStatus(false, e)};
@@ -48,21 +50,22 @@ const initCanvas = () => {
 
 const init = () => {
     grid = new FluidGrid(w, h);
-    grid.addDensity(50,50,100);
-    grid.addDensity(40,50,100);
-    grid.addDensity(50,40,10);
-    for (let x = 0; x < w; x++) {
-        for (let y = 0; y < h; y++) {
-            grid.addVelocity(x,y, [0.1,-0.1]);
-        }
-    }
-    grid.initVelocity();
+    setGlobalVelocity(0.1, -0.1);
     
     grid.densityStep();
     initCanvas();
     renderGrid();
     startRenderLoop();
     
+}
+
+const setGlobalVelocity = (vX, vY) => {
+    for (let x = 0; x < w; x++) {
+        for (let y = 0; y < h; y++) {
+            grid.setVelocity(x,y, [vX, vY]);
+        }
+    }
+    grid.initVelocity();
 }
 
 const onNewFrame = () => {
@@ -73,6 +76,7 @@ const onNewFrame = () => {
     }
     if (isMouseDown) {
         grid.addDensity(Math.floor(mPos[0]), Math.floor(mPos[1]), a );
+        setGlobalVelocity(mVec[0] / 100, mVec[1] / 100);
     }
     grid.densityStep();
     renderGrid();

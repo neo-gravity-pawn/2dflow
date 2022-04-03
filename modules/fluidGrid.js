@@ -30,14 +30,14 @@ export class FluidGrid {
         this.#dPrev[this.#i(x, y)] += d;
     }
 
-    addVelocity = (x, y, v) => {
-        this.#vPrev.x[this.#i(x, y)] += v[0];
-        this.#vPrev.y[this.#i(x, y)] += v[1];
+    setVelocity = (x, y, v) => {
+        this.#v.x[this.#i(x, y)] = v[0];
+        this.#v.y[this.#i(x, y)] = v[1];
     }
 
     initVelocity = () => {
-        this.#addDifferentialAmount(this.#v.x, this.#vPrev.x, 1.0);
-        this.#addDifferentialAmount(this.#v.y, this.#vPrev.y, 1.0);
+        this.#addDifferentialAmount(this.#v.x, this.#vPrev.x, 0.1);
+        this.#addDifferentialAmount(this.#v.y, this.#vPrev.y, 0.1);
         // this.#addDifferentialAmount(this.#d, this.#dPrev, 1);
     }
 
